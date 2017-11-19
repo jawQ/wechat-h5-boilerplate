@@ -15,6 +15,7 @@ var runSequence = require('run-sequence');
 var sass = require('gulp-sass');
 var streamSeries = require('stream-series');
 var plumber = require('gulp-plumber');
+var babel = require('gulp-babel');
 var uglify = require('gulp-uglify');
 
 var vendors = require('./config/vendors');
@@ -88,13 +89,13 @@ gulp.task('publish-js', function () {
     return streamSeries(
         gulp.src(jsVendors),
         gulp.src('app/src/javascripts/main.js')
-            .pipe(plumber({
-                errorHandler: errorAlert
-            }))
-            .pipe(browserify({
-                transform: ['partialify'],
-                debug: true
-            }))
+          .pipe(plumber({
+              errorHandler: errorAlert
+          }))
+          .pipe(browserify({
+              transform: ['partialify'],
+              debug: true
+          }))
         )
         .pipe(concat('bundle.js'))
         .pipe(gulp.dest('app/dist/javascripts'));
@@ -179,11 +180,14 @@ gulp.task('minify-css', function () {
 // uglify app/dist/javascripts/bundle.js and save as app/dist/javascripts/bundle.min.js
 gulp.task('uglify-js', function () {
     return gulp.src('app/dist/javascripts/bundle.js')
-        .pipe(uglify())
-        .pipe(rename({
-            suffix: '.min'
-        }))
-        .pipe(gulp.dest('app/dist/javascripts'));
+      // .pipe(babel({
+      //   presets: ['es2015']
+      // }))
+      .pipe(uglify())
+      .pipe(rename({
+        suffix: '.min'
+      }))
+      .pipe(gulp.dest('app/dist/javascripts'));
 });
 
 // inject app/dist/stylesheets/bundle.min.css and app/dist/javascripts/bundle.min.js into app/src/index.html
